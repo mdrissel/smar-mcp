@@ -51,6 +51,109 @@ MCP is a new technology. This integration relies on a SMARTSHEET API token allow
    npm run build
    ```
 
+## Docker Installation (Alternative)
+
+You can also run the Smartsheet MCP Server using Docker, which provides a consistent environment and easier deployment.
+
+### Prerequisites
+
+- Docker and Docker Compose installed on your system
+- A Smartsheet API token from the [Smartsheet Developer Portal](https://developers.smartsheet.com/)
+
+### Quick Start with Docker
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/smartsheet-platform/smar-mcp.git
+   cd smar-mcp
+   ```
+
+2. Create a `.env` file in the project root:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Edit the `.env` file with your Smartsheet API credentials:
+   ```
+   SMARTSHEET_API_KEY=your_smartsheet_api_token_here
+   SMARTSHEET_ENDPOINT=https://api.smartsheet.com/2.0
+   ALLOW_DELETE_TOOLS=false
+   ```
+
+4. Build and run with Docker Compose:
+   ```bash
+   docker-compose up --build
+   ```
+
+### Docker Commands
+
+#### Production Mode
+```bash
+# Build and run the production container
+docker-compose up --build
+
+# Run in detached mode
+docker-compose up -d
+
+# Stop the container
+docker-compose down
+```
+
+#### Development Mode
+```bash
+# Run in development mode with hot reload
+docker-compose --profile dev up --build
+
+# Or run the development service specifically
+docker-compose up smar-mcp-dev --build
+```
+
+#### Manual Docker Build
+```bash
+# Build the Docker image
+docker build -t smar-mcp .
+
+# Run the container with environment variables
+docker run -it --rm \
+  -e SMARTSHEET_API_KEY=your_api_key_here \
+  -e SMARTSHEET_ENDPOINT=https://api.smartsheet.com/2.0 \
+  -e ALLOW_DELETE_TOOLS=false \
+  smar-mcp
+```
+
+### Docker Configuration
+
+The Docker setup includes:
+
+- **Multi-stage build**: Separate development and production stages
+- **Non-root user**: Runs as a dedicated `smar-mcp` user for security
+- **Environment variables**: Configurable via `.env` file or Docker environment
+- **Volume mounting**: Development mode supports live code reloading
+- **Network isolation**: Uses a dedicated Docker network
+
+### Using with MCP Clients
+
+When running in Docker, you can connect MCP clients by:
+
+1. **For local development**: Use `docker-compose up` and connect to the container's stdio
+2. **For production**: Deploy the container and configure your MCP client to connect to the running instance
+
+Example Claude Desktop configuration for Docker:
+```json
+{
+  "mcpServers": {
+    "smartsheet": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "--env-file", "/path/to/your/.env",
+        "smar-mcp"
+      ]
+    }
+  }
+}
+```
+
 ## Usage
 
 There are several ways to run the MCP server with the `.env` file loaded:
